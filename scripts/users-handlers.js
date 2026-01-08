@@ -1,5 +1,5 @@
 "use strict";
-const mysql = require("mysql");
+const mysql = require("mysql2");
 const options = require("./connection-options.json");
 
 module.exports.getUsers = (request, response) => {

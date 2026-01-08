@@ -2,6 +2,12 @@
   "name": "pw-lab07",
   "description": "Lab 07 da UC PW",
   "version": "1.0.0",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node --watch app.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
   "dependencies": {
     "body-parser": "^1.19.1",
     "cookie-parser": "^1.4.6",
@@ -10,9 +16,13 @@
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
     "mysql2-promise": "^0.1.4",
-    "oracledb": "^5.3.0",
     "websocket": "^1.0.34",
     "ws": "^8.5.0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "eslint": "^9.39.2",
+    "globals": "^17.0.0"
+  }
 }

@@ -4,48 +4,48 @@ var usersArray = [];
 var usersTable = null;
 var pageSettings;
 
-$(document).ready(()=> {
-    $("#buttonNewUserOpenModel").on("click", function(event){
+$(document).ready(() => {
+    $("#buttonNewUserOpenModel").on("click", function (event) {
         event.stopPropagation();
         event.preventDefault();
         createNewUserModal();
     });
 
-    $("#buttonNewUserSave").on("click", function(event){
+    $("#buttonNewUserSave").on("click", function (event) {
         event.stopPropagation();
         event.preventDefault();
         createNewUserModalVerification();
     });
 
-    $("#buttonEditUserDelete").on("click", function(event){
+    $("#buttonEditUserDelete").on("click", function (event) {
         event.stopPropagation();
         event.preventDefault();
         checkUserModalToDelete();
     });
 
-    $("#buttonDeleteUserCancel").on("click", function(event){
+    $("#buttonDeleteUserCancel").on("click", function (event) {
         event.stopPropagation();
         event.preventDefault();
         checkUserModalToDeleteButton(false);
     });
 
-    $("#buttonDeleteUserConfirm").on("click", function(event){
+    $("#buttonDeleteUserConfirm").on("click", function (event) {
         event.stopPropagation();
         event.preventDefault();
         checkUserModalToDeleteButton(true);
     });
 
-    $("#buttonEditUserSave").on("click", function(event){
+    $("#buttonEditUserSave").on("click", function (event) {
         event.stopPropagation();
         event.preventDefault();
         checkUserModalToSave();
     });
 
-    $(document).on("click", "#usersTable tbody tr td:last-child i", function(e){
+    $(document).on("click", "#usersTable tbody tr td:last-child i", function (e) {
         e.preventDefault();
         e.stopPropagation();
         const userId = parseInt($(this).attr("data-userId"));
-        openUserModalToEdit(userId); 
+        openUserModalToEdit(userId);
     });
 
     loadAllUsers();
@@ -54,16 +54,16 @@ $(document).ready(()=> {
 
 
 function loadAllUsers() {
-    let table = $("#usersTable"); 
+    let table = $("#usersTable");
 
-    getUsersAjax((users)=>{
+    getUsersAjax((users) => {
         usersArray = users;
 
         if (usersTable) {
             usersArray = users;
             usersTable.clear().draw();
-            usersTable.rows.add(usersArray); 
-            usersTable.columns.adjust().draw(); 
+            usersTable.rows.add(usersArray);
+            usersTable.columns.adjust().draw();
             return;
         }
 
@@ -79,58 +79,67 @@ function loadAllUsers() {
                 }
             },
             searching: true,
-		    info: true,
+            info: true,
             paging: true,
             order: [],
-            fnRowCallback: function(row) {
-                $(row).attr("scope", "row");     
+            fnRowCallback: function (row) {
+                $(row).attr("scope", "row");
             },
             lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
             columnDefs: [
-                { targets: 4, width: "70px", className: "text-center" },
-                { targets: 5, className: "text-center tableJobTdIcon", width: "20px" },
-                { orderable: false, targets: [2, 3, 4, 5] }
+                { targets: 4, width: "100px", className: "text-center" },
+                { targets: 5, width: "70px", className: "text-center" },
+                { targets: 6, className: "text-center tableJobTdIcon", width: "20px" },
+                { orderable: false, targets: [2, 3, 4, 5, 6] }
             ],
             columns: [
                 { data: 'name' },
                 { data: 'userName' },
                 { data: 'email' },
                 { data: 'roleDescription' },
-                { data: 'TOTAL_JOBS' },
-                { data: null, render : function (data, type, _, __) {
-                    if (type === "display") {
-                        if (userDetails.id === data.id) {
-                            return "";
+                {
+                    data: 'status', render: function (data) {
+                        if (data === 'active') {
+                            return '<span class="badge badge-success">Ativo</span>';
                         }
-                        
-                        return `<i class="fas fa-edit table-users-icon-edit" data-userId="${data.id}"></i>`;
-                    } 
-                    else 
-                    {
-                        return data;
+                        return '<span class="badge badge-danger">Bloqueado</span>';
                     }
-                  }
+                },
+                { data: 'TOTAL_JOBS' },
+                {
+                    data: null, render: function (data, type, _, __) {
+                        if (type === "display") {
+                            if (userDetails.id === data.id) {
+                                return "";
+                            }
+
+                            return `<i class="fas fa-edit table-users-icon-edit" data-userId="${data.id}"></i>`;
+                        }
+                        else {
+                            return data;
+                        }
+                    }
                 }
             ]
         });
     });
 }
 
-function loadPageSettings(){    
-    loadPageSettingsAjax((settings)=>{
+function loadPageSettings() {
+    loadPageSettingsAjax((settings) => {
         pageSettings = settings;
         //console.log(pageSettings);
         let inpEditUserType = $("#inpEditUserType");
         let inpUserType = $("#inpUserType");
 
-        pageSettings[0].forEach((code)=>{
+        pageSettings[0].forEach((code) => {
             inpEditUserType.append(`<option value='${code.code}'>${code.description}</option>`);
             inpUserType.append(`<option value='${code.code}'>${code.description}</option>`);
         });
     });
 }
 
-function createNewUserModal(){
+function createNewUserModal() {
     let modal = $("#modalCreateUser");
     modal.find("#inpCreateName").val("");
     modal.find("#inpCreateUserName").val("");
@@ -142,7 +151,7 @@ function createNewUserModal(){
     modal.modal("show");
 }
 
-function createNewUserModalVerification(){
+function createNewUserModalVerification() {
     let modal = $("#modalCreateUser");
 
     let name = modal.find("#inpCreateName").val();
@@ -172,12 +181,12 @@ function createNewUserModalVerification(){
         return;
     }
 
-    if (usersArray.filter((u)=>{ return u.userName.replace(" ", "").toUpperCase() === userName.replace(" ", "").toUpperCase(); }).length) {
+    if (usersArray.filter((u) => { return u.userName.replace(" ", "").toUpperCase() === userName.replace(" ", "").toUpperCase(); }).length) {
         showHideModalErrorMessage(modal, true, "Este utilizador já existe");
         return;
     }
 
-    if (usersArray.filter((u)=>{ return u.email.replace(" ", "").toUpperCase() === email.replace(" ", "").toUpperCase(); }).length) {
+    if (usersArray.filter((u) => { return u.email.replace(" ", "").toUpperCase() === email.replace(" ", "").toUpperCase(); }).length) {
         showHideModalErrorMessage(modal, true, "Um utilizador com este email já existe");
         return;
     }
@@ -195,21 +204,21 @@ function createNewUserModalVerification(){
         showHideModalErrorMessage(modal, true, "Confirme password.");
         return;
     }
-    if(!(password === confirmPassword)) {
+    if (!(password === confirmPassword)) {
         showHideModalErrorMessage(modal, true, "As passwords não correspondem.");
         return;
     }
 
     const user = new User(
-        null, 
-        userName, 
-        name, 
-        email, 
+        null,
+        userName,
+        name,
+        email,
         role,
         confirmPassword
     );
 
-    createUserAjax(user, (success)=>{
+    createUserAjax(user, (success) => {
         if (!success) {
             showHideModalErrorMessage(modal, true, "Algo correu mal. Tente outravez.");
             return;
@@ -219,8 +228,8 @@ function createNewUserModalVerification(){
     });
 }
 
-function openUserModalToEdit(userId){    
-    const user = usersArray.filter((u)=>{ return u.id === userId; })[0];
+function openUserModalToEdit(userId) {
+    const user = usersArray.filter((u) => { return u.id === userId; })[0];
     //console.log(user);
     let modal = $("#modalEditUser");
     modal.attr("data-id", userId);
@@ -240,8 +249,8 @@ function openUserModalToEdit(userId){
     modal.modal("show");
 }
 
-function checkUserModalToDelete(){
-    let modalEdit = $("#modalEditUser");    
+function checkUserModalToDelete() {
+    let modalEdit = $("#modalEditUser");
     const userId = parseInt(modalEdit.attr("data-id"));
 
     modalEdit.on('hidden.bs.modal', function (e) {
@@ -254,9 +263,9 @@ function checkUserModalToDelete(){
     modalEdit.modal("hide");
 }
 
-function checkUserModalToDeleteButton(toDelete){
+function checkUserModalToDeleteButton(toDelete) {
     let modalMessage = $("#modalMessage");
-    let modalEdit = $("#modalEditUser"); 
+    let modalEdit = $("#modalEditUser");
     const userId = parseInt(modalMessage.attr("data-id"));
 
     showHideModalErrorMessage(modalEdit, false);
@@ -270,7 +279,7 @@ function checkUserModalToDeleteButton(toDelete){
         return;
     }
 
-    deleteUserAjax(userId, (success)=>{
+    deleteUserAjax(userId, (success) => {
         if (!success) {
             modalMessage.on('hidden.bs.modal', function (e) {
                 $(this).off('hidden.bs.modal');
@@ -287,7 +296,7 @@ function checkUserModalToDeleteButton(toDelete){
 }
 
 function checkUserModalToSave() {
-    let modal = $("#modalEditUser");    
+    let modal = $("#modalEditUser");
     const userId = parseInt(modal.attr("data-id"));
 
     showHideModalErrorMessage(modal, false);
@@ -297,7 +306,7 @@ function checkUserModalToSave() {
     let email = modal.find("#inpEditEmail").val();
     let role = modal.find("#inpEditUserType").val();
 
-   
+
     if (name === "") {
         showHideModalErrorMessage(modal, true, "O nome é obrigatório.");
         return;
@@ -311,16 +320,16 @@ function checkUserModalToSave() {
         showHideModalErrorMessage(modal, true, "O email não é valido.");
         return;
     }
-    if (usersArray.filter((u)=>{ return u.email.replace(" ", "").toUpperCase() === email.replace(" ", "").toUpperCase() && u.id !== userId; }).length) {
+    if (usersArray.filter((u) => { return u.email.replace(" ", "").toUpperCase() === email.replace(" ", "").toUpperCase() && u.id !== userId; }).length) {
         showHideModalErrorMessage(modal, true, "Um utilizador com este email já existe");
         return;
     }
 
     const user = new User(
-        userId, 
-        userName, 
-        name, 
-        email, 
+        userId,
+        userName,
+        name,
+        email,
         role,
         null
     );
@@ -338,15 +347,14 @@ function checkUserModalToSave() {
 
 
 //============================================= HELPER FUNCTIONS
-function showHideModalErrorMessage(modal, show, message) { 
+function showHideModalErrorMessage(modal, show, message) {
     let errorMessage = modal.find(".errorDivMessage");
 
     if (show) {
         errorMessage.text(message);
         errorMessage.show();
     }
-    else
-    {
+    else {
         errorMessage.text("");
         errorMessage.hide();
     }
@@ -354,9 +362,9 @@ function showHideModalErrorMessage(modal, show, message) {
 
 
 //============================================= AJAX CALLS
-function getUsersAjax(callback){
+function getUsersAjax(callback) {
     let xhr = new XMLHttpRequest();
-    xhr.responseType="json";
+    xhr.responseType = "json";
     xhr.open("GET", "/api/getUsers", true);
     xhr.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
@@ -375,9 +383,9 @@ function getUsersAjax(callback){
     xhr.send();
 }
 
-function createUserAjax(user, callback){
+function createUserAjax(user, callback) {
     let xhr = new XMLHttpRequest();
-    xhr.responseType="json";    
+    xhr.responseType = "json";
     xhr.open("POST", "/api/createUser", true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onreadystatechange = function () {
@@ -393,9 +401,9 @@ function createUserAjax(user, callback){
     xhr.send(JSON.stringify(user));
 }
 
-function deleteUserAjax(id, callback){
+function deleteUserAjax(id, callback) {
     let xhr = new XMLHttpRequest();
-    xhr.responseType="json";    
+    xhr.responseType = "json";
     xhr.open("DELETE", `/api/deleteUser/${id}`, true);
     xhr.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
@@ -410,9 +418,9 @@ function deleteUserAjax(id, callback){
     xhr.send();
 }
 
-function editUserAjax(user, callback){
+function editUserAjax(user, callback) {
     let xhr = new XMLHttpRequest();
-    xhr.responseType="json";    
+    xhr.responseType = "json";
     xhr.open("PUT", "/api/editUser", true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onreadystatechange = function () {
@@ -428,9 +436,9 @@ function editUserAjax(user, callback){
     xhr.send(JSON.stringify(user));
 }
 
-function loadPageSettingsAjax(callback){
+function loadPageSettingsAjax(callback) {
     let xhr = new XMLHttpRequest();
-    xhr.responseType="json";
+    xhr.responseType = "json";
     xhr.open("GET", "/api/getPageSettings", true);
     xhr.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {

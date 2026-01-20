@@ -278,6 +278,85 @@ describe("Testes de caracterização (comportamento atual observável)", () => {
             expect(res.status).toBe(400);
         }
     );
+
+    // --- Novos testes adicionados para cobertura de Clients ---
+    test("CARACT | PUT /api/editClient devolve sucesso quando ID é fornecido", async () => {
+        const res = await request(app).put("/api/editClient").send({ id: 10, name: "New Name" });
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+    });
+
+    test("CARACT | DELETE /api/deleteClient/:id devolve 200", async () => {
+        const res = await request(app).delete("/api/deleteClient/1");
+        expect(res.status).toBe(200);
+    });
+
+    // --- Novos testes adicionados para cobertura de Users ---
+    test("CARACT | GET /api/getPageSettings devolve configurações", async () => {
+        const res = await request(app).get("/api/getPageSettings");
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty("pageSettings");
+    });
+
+    test("CARACT | POST /api/createUser devolve 200", async () => {
+        const res = await request(app).post("/api/createUser").send({ userName: "new" });
+        expect(res.status).toBe(200);
+    });
+
+    test("CARACT | PUT /api/editUser devolve sucesso", async () => {
+        const res = await request(app).put("/api/editUser").send({ id: 20 });
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+    });
+
+    test("CARACT | DELETE /api/deleteUser/:id devolve 200", async () => {
+        const res = await request(app).delete("/api/deleteUser/20");
+        expect(res.status).toBe(200);
+    });
+
+    // --- Novos testes adicionados para cobertura de Jobs ---
+    test("CARACT | POST /api/getListJobs devolve lista vazia (mock)", async () => {
+        const res = await request(app).post("/api/getListJobs");
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty("jobs");
+    });
+
+    test("CARACT | POST /api/createJob devolve 200", async () => {
+        const res = await request(app).post("/api/createJob").send({ some: "data" });
+        expect(res.status).toBe(200);
+    });
+
+    test("CARACT | GET /api/getUserInfoInitState devolve 200", async () => {
+        const res = await request(app).get("/api/getUserInfoInitState");
+        expect(res.status).toBe(200);
+    });
+
+    test("CARACT | PUT /api/reopenJob devolve 200", async () => {
+        const res = await request(app).put("/api/reopenJob").send({ id: 1 });
+        expect(res.status).toBe(200);
+    });
+
+    test("CARACT | PUT /api/editJobInfo devolve 200", async () => {
+        const res = await request(app).put("/api/editJobInfo").send({ id: 1 });
+        expect(res.status).toBe(200);
+    });
+
+    test("CARACT | PUT /api/editOrderPriority devolve 200", async () => {
+        const res = await request(app).put("/api/editOrderPriority").send({ id: 1 });
+        expect(res.status).toBe(200);
+    });
+
+    // --- Novos testes adicionados para cobertura de Messaging ---
+    test("CARACT | POST /api/loadWebSocketSettings devolve 200", async () => {
+        const res = await request(app).post("/api/loadWebSocketSettings");
+        expect(res.status).toBe(200);
+    });
+
+    test("CARACT | POST /api/loadWebSocketMessages devolve mensagens", async () => {
+        const res = await request(app).post("/api/loadWebSocketMessages");
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty("messages");
+    });
 });
 
 describe("Testes de objetivos de qualidade (requisitos desejáveis) - marcados como KNOWN DEFECT", () => {

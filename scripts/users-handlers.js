@@ -18,9 +18,14 @@ module.exports.getUsers = (request, response) => {
     connection.query(query, function (err, rows) {
         if (err) {
             console.log(err)
-            response.json({users: [] });
+            response.json({ users: [] });
         } else {
-            response.json({users: rows });
+            // Mock status for UI demonstration
+            const rowsWithStatus = rows.map(user => ({
+                ...user,
+                status: Math.random() > 0.3 ? 'active' : 'blocked' // Simula alguns bloqueados
+            }));
+            response.json({ users: rowsWithStatus });
         }
     });
 }
@@ -33,9 +38,8 @@ module.exports.createUser = (request, response) => {
         if (err) {
             console.log(err);
             response.sendStatus(500);
-        } 
-        else 
-        {
+        }
+        else {
             response.sendStatus(200);
         }
     });
@@ -48,11 +52,10 @@ module.exports.editUser = (request, response) => {
     connection.query(query, [request.body.name, request.body.email, request.body.role, request.body.id], function (err, rows) {
         if (err) {
             console.log(err)
-            response.json({success: false});
-        } 
-        else 
-        {
-            response.json({success: true});
+            response.json({ success: false });
+        }
+        else {
+            response.json({ success: true });
         }
     });
 }
@@ -65,9 +68,8 @@ module.exports.deleteUser = (request, response) => {
         if (err) {
             console.log(err);
             response.sendStatus(500);
-        } 
-        else 
-        {
+        }
+        else {
             response.sendStatus(200);
         }
     });
@@ -81,9 +83,9 @@ module.exports.getPageSettings = (request, response) => {
     connection.query(`${query1}`, function (err, results) {
         if (err) {
             console.log(err)
-            response.json({pageSettings: [] });
+            response.json({ pageSettings: [] });
         } else {
-            response.json({pageSettings: [results] });
+            response.json({ pageSettings: [results] });
         }
     });
 }
